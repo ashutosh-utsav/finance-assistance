@@ -25,4 +25,5 @@ dependencies = [
     "yfinance>=0.2.61",
     "beautifulsoup4>=4.12.3",
     "streamlit-mic-recorder>=0.0.8",
+    "ffmpeg>=1.4",
 ]
