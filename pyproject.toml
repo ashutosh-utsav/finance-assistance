@@ -10,6 +10,7 @@ dependencies = [
     "feedparser>=6.0.11",
     "pandas>=2.2.3",
     "requests>=2.32.3",
+    "sentence-transformers>=4.1.0",
     "soundfile>=0.13.1",
     "streamlit>=1.45.1",
     "uvicorn>=0.34.2",
