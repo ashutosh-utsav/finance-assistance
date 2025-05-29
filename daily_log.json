@@ -1,0 +1,28 @@
+{
+  "portfolio": {
+    "2330.TW": {
+      "name": "TSMC",
+      "allocation": 0.4,
+      "region": "TW",
+      "lang": "zh-Hant"
+    },
+    "005930.KS": {
+      "name": "Samsung Electronics",
+      "allocation": 0.3,
+      "region": "KR",
+      "lang": "ko-KR"
+    },
+    "9988.HK": {
+      "name": "Alibaba Group",
+      "allocation": 0.15,
+      "region": "HK",
+      "lang": "zh-Hant"
+    },
+    "TCEHY": {
+      "name": "Tencent Holdings (US ADR)",
+      "allocation": 0.15,
+      "region": "US",
+      "lang": "en-US"
+    }
+  }
+}

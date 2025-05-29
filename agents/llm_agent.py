@@ -20,48 +20,54 @@ def generate_summary(full_context: dict) -> str:
     Returns:
         str: A coherent, narrative market brief.
     """
-    # 1. Initialize the LLM
+    # Initialize the LLM
     try:
-        # --- THE ONLY CHANGE IS HERE ---
+        # THE ONLY CHANGE IS HERE ---
         # We are using a newer, more reliable model name.
         llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
         
     except Exception as e:
         return f"Error initializing the LLM. Please check your API key. Details: {e}"
 
-    # 2. Engineer the Prompt Template
+# Prompt Template
     prompt_template = """
-    You are a sharp financial analyst reporting to a portfolio manager.
-    Your task is to provide a concise, easy-to-read daily market brief based on the data below.
-    Focus on the most significant changes and their potential impact.
-
-    Here is the data for today:
+    You are a friendly and helpful AI financial assistant. Your user has asked a question, and your goal is to answer it directly and conversationally, using the provided context.
 
     ---
-    1. CURRENT PORTFOLIO ALLOCATION:
-    {portfolio_data}
+    THE USER'S QUESTION IS:
+    "{user_query}"
+    ---
 
-    2. KEY ANALYSIS SUMMARY:
+    Use the following context to formulate your answer:
+
+    CONTEXT 1: RELEVANT NEWS SNIPPETS
+    These are the most important pieces of information, as they were specifically retrieved based on the user's query.
+    {retrieved_news}
+
+    CONTEXT 2: GENERAL MARKET ANALYSIS
+    This provides a broader summary of recent market activity for our tracked portfolio.
     {analysis_summary}
 
-    3. RELEVANT NEWS SNIPPETS (Retrieved from Vector Database):
-    {retrieved_news}
-    ---
+    CONTEXT 3: CURRENT PORTFOLIO DATA
+    This shows the current asset allocation.
+    {portfolio_data}
 
+    ---
     INSTRUCTIONS:
-    - Synthesize all the information into a single, coherent paragraph.
-    - Start with the most important takeaway.
-    - Do not list the data; weave it into a narrative.
-    - Keep it brief and to the point.
+    1.  Start with a friendly, direct answer to the user's question: "{user_query}".
+    2.  Use the "RELEVANT NEWS SNIPPETS" (Context 1) as the primary basis for your answer.
+    3.  Use the other context for background color or to add details about portfolio impact if relevant.
+    4.  Keep your tone conversational and easy to understand. Do not just list the data. Weave it into a narrative.
+    5.  If the provided context does not contain enough information to answer the question, clearly state that you couldn't find specific information on that topic.
     """
 
-    # 3. Create a Prompt from the template
+    # Create a Prompt from the template
     prompt = ChatPromptTemplate.from_template(prompt_template)
 
-    # 4. Create the "Chain"
+    #  Create the "Chain"
     chain = prompt | llm
 
-    # 5. Invoke the Chain with our context
+    # Invoke the Chain with our context
     try:
         response = chain.invoke(full_context)
         return response.content
