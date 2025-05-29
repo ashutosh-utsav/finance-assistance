@@ -5,6 +5,7 @@ import time
 import sys
 import os
 import requests
+from streamlit_mic_recorder import mic_recorder # <-- IMPORT THE NEW COMPONENT
 
 # --- This MUST be the first Streamlit command ---
 st.set_page_config(
@@ -28,7 +29,7 @@ API_URL = "http://127.0.0.1:8000/query"
 
 # --- Session State Initialization ---
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! Backend is starting. Please wait a few moments..."}]
+    st.session_state.messages = [{"role": "assistant", "content": "Hello! Backend is starting. Please wait..."}]
 if "speak_this_response" not in st.session_state:
     st.session_state.speak_this_response = None
 if "backend_ready" not in st.session_state:
@@ -51,7 +52,6 @@ def check_backend_status():
         if response.status_code == 200:
             if not st.session_state.backend_ready:
                 st.session_state.backend_ready = True
-                # Update initial message only if it's the default startup message
                 if st.session_state.messages and "Backend is starting" in st.session_state.messages[0]["content"]:
                     st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I help you?"}]
                 st.rerun()
@@ -63,7 +63,7 @@ def check_backend_status():
 # --- Streamlit UI Helper Functions ---
 def get_ai_brief(query: str):
     if not st.session_state.backend_ready:
-        return {"error": "Backend server is not ready or unavailable. Please wait."}
+        return {"error": "Backend server is not ready. Please wait."}
     try:
         response = requests.post(API_URL, json={"query": query})
         response.raise_for_status()
@@ -85,7 +85,6 @@ def process_query(query_text):
         st.rerun()
 
 # --- Streamlit UI Rendering ---
-# Minimal CSS just to hide default Streamlit hamburger menu and footer
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -94,11 +93,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("💼 AI Financial Assistant") # <-- TITLE FIXED
+st.title("💼 AI Financial Assistant")
 
 # Display Chat History
-# This will be the main scrollable area for messages
-# Add a container with a key to ensure it's treated consistently for height
 chat_container = st.container()
 with chat_container:
     for message in st.session_state.messages:
@@ -109,28 +106,39 @@ with chat_container:
 if st.session_state.speak_this_response:
     text_to_speak = st.session_state.speak_this_response
     st.session_state.speak_this_response = None
-    time.sleep(0.1) # Small delay for UI to update before sound
-    with st.spinner("Preparing audio..."): # This spinner might be very brief
+    time.sleep(0.1)
+    with st.spinner("Preparing audio..."):
         voice_agent.speak(text_to_speak)
-    # Consider if a rerun is needed here to clear the spinner,
-    # often not necessary if `speak` is quick.
 
 # --- Inputs at the bottom ---
-# The Voice Input Button will appear directly above the text chat_input area
-# due to Streamlit's top-down rendering order.
-if st.button("🎙️ Ask by Voice", use_container_width=True, key="voice_input_button_bottom", disabled=not st.session_state.backend_ready):
-    if st.session_state.backend_ready:
-        with st.spinner("Listening..."):
-            voice_query = voice_agent.listen_and_transcribe()
-            if voice_query and not voice_query.startswith("error:"):
-                process_query(voice_query)
-            elif voice_query:
-                st.error(voice_query)
-    else:
-        st.warning("Backend is not ready. Please wait.")
 
-# Text Input (st.chat_input is always fixed at the bottom)
-if prompt := st.chat_input("Type your question...", disabled=not st.session_state.backend_ready):
+# --- Voice Input using streamlit-mic-recorder ---
+st.write("---") # A small separator
+st.write("🎤 **Ask by Voice:**")
+audio_data = mic_recorder(
+    start_prompt="🔴 Click to Record",
+    stop_prompt="⏹️ Click to Stop",
+    just_once=True, # Record only once per interaction
+    use_container_width=True,
+    key='voice_recorder'
+)
+
+if audio_data and audio_data['bytes']:
+    st.audio(audio_data['bytes'], format='audio/wav') # Optional: Play back recorded audio
+    with st.spinner("Transcribing voice..."):
+        # Pass the bytes and a filename to the agent
+        voice_query = voice_agent.listen_and_transcribe(
+            audio_bytes=audio_data['bytes'],
+            audio_filename="user_recording.wav" # Filename helps API infer format
+        )
+        if voice_query and not voice_query.startswith("error:"):
+            st.success(f"Transcribed: {voice_query}")
+            process_query(voice_query)
+        elif voice_query:
+            st.error(voice_query)
+
+# Text Input
+if prompt := st.chat_input("Or type your question...", disabled=not st.session_state.backend_ready):
     if st.session_state.backend_ready:
         process_query(prompt)
     else:
@@ -146,12 +154,7 @@ if not st.session_state.fastapi_thread_started:
     time.sleep(2)
 
 if not st.session_state.backend_ready:
-    # Try to check status on each run if not ready
-    # This helps update the UI once the backend is up
     if check_backend_status():
         print("Backend confirmed ready by periodic check.")
     else:
-        # You can add a st.info or st.warning here if you want a persistent
-        # "Backend starting..." message in the UI itself until it's ready.
-        # For now, the initial message in st.session_state.messages serves this.
         print("Backend still initializing... Inputs disabled.")

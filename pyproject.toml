@@ -17,14 +17,12 @@ dependencies = [
     "langgraph>=0.4.7",
     "openai>=1.82.0",
     "pandas>=2.2.3",
-    "pyaudio>=0.2.14",
     "requests>=2.32.3",
     "sentence-transformers>=4.1.0",
-    "soundfile>=0.13.1",
-    "speechrecognition>=3.10.4",
     "streamlit>=1.45.1",
     "torch>=2.7.0",
     "uvicorn>=0.34.2",
     "yfinance>=0.2.61",
-    "beautifulsoup4>=4.12.3"
+    "beautifulsoup4>=4.12.3",
+    "streamlit-mic-recorder>=0.0.8",
 ]
