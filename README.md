@@ -62,8 +62,8 @@ project_root/
 
 1.  **Clone the Repository:**
     ```bash
-    git clone <your-repository-url>
-    cd <project-name>
+    git clone git@github.com:ashutosh-utsav/finance-assistance.git
+    cd finance-assistance
     ```
 
 2.  **Install Dependencies:**
@@ -76,8 +76,8 @@ project_root/
     * Create a `.env` file in the project root.
     * Add your API keys:
         ```env
-        GOOGLE_API_KEY="your_google_gemini_api_key"
-        OPENAI_API_KEY="your_openai_api_key"
+        GOOGLE_API_KEY="google_gemini_api_key"
+        OPENAI_API_KEY="openai_api_key"
         ```
 
 4.  **Configure Your Portfolio:**
