@@ -43,7 +43,7 @@ The system is orchestrated by a FastAPI backend, ensuring a modular and scalable
 * **Package Management & Runner:** `uv`
 
 ## Project Structure
-
+```
 project_root/
 ├── agents/             # Contains all specialized agents (API, scraper, retriever, etc.)
 ├── orchestrator/       # FastAPI microservice and LangGraph workflow
@@ -56,7 +56,7 @@ project_root/
 ├── .env                # API keys (GOOGLE_API_KEY, OPENAI_API_KEY)
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
-
+```
 
 ## Setup and Installation
 
