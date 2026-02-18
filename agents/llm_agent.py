@@ -24,7 +24,7 @@ def generate_summary(full_context: dict) -> str:
     try:
         # THE ONLY CHANGE IS HERE ---
         # We are using a newer, more reliable model name.
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
         
     except Exception as e:
         return f"Error initializing the LLM. Please check your API key. Details: {e}"

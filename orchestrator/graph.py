@@ -41,7 +41,7 @@ def classify_intent(state: GraphState):
     user_query = state["user_query"]
     
     # We use a simple, fast LLM call to classify the intent
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
     prompt = ChatPromptTemplate.from_template(
         """Your task is to classify the user's query into one of two categories: 'financial_query' or 'general_conversation'.
         - 'financial_query': For questions about stocks, markets, portfolios, earnings, financial news, or specific companies.
@@ -63,7 +63,7 @@ def handle_general_conversation(state: GraphState):
     print("---Entering Node: handle_general_conversation (General Path)---")
     user_query = state["user_query"]
     
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
     prompt = ChatPromptTemplate.from_template(
         """You are a helpful and friendly AI financial assistant. Answer the user's general question directly and conversationally.
         
